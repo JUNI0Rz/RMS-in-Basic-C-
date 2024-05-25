@@ -1,0 +1,1767 @@
+#include<fstream>
+#include<string>
+#include <iostream>
+using namespace std;
+const int Size = 17;
+
+class dataa
+{
+public:
+
+	string name;
+	int id;
+	int age;
+	int pass;
+	string order_type;
+	string location;
+
+	dataa(string n, int i, int a, int p, string l)
+	{
+		name = n;
+		id = i;
+		age = a;
+		pass = p;
+		location = l;
+	}
+	dataa(string n, int i, int a, string l, string type)
+	{
+		name = n;
+		id = i;
+		age = a;
+		pass = -1;
+		location = l;
+		order_type = type;
+	}
+
+
+};
+
+
+class dish
+{
+public:
+	string name;
+	int price;
+	int count;
+	dish* next;
+	dish(string n, int p)
+	{
+		price = p;
+		name = n;
+		count = 1;
+		next = NULL;
+	}
+	dish(string n, int p,int c)
+	{
+		price = p;
+		name = n;
+		count = c;
+		next = NULL;
+	}
+};
+
+
+class customer
+{
+public:
+
+
+	dataa* d;
+	customer* next;
+	dish* dish_name;
+
+	customer()
+	{
+		dish_name = new dish("nill", 0);
+		next = NULL;
+	}
+
+	customer(int i, string n, int a, int p, string l)
+	{
+		next = NULL;
+		d = new dataa(n, i, a, p, l);
+		dish_name = new dish("nill", 0);
+	}
+
+
+	customer(int i, string n, int a, string l, string dn, int price, string type)
+	{
+		next = NULL;
+		d = new dataa(n, i, a, l, type);
+		dish_name = new dish(dn, price);
+	}
+
+
+};
+
+
+class menu
+{
+	dish* head;
+public:
+	menu()
+	{
+		head = NULL;
+	}
+
+	void saveToFile(string n, int p) {
+
+		ofstream file("dish.txt", ios::app);
+
+		if (file.is_open())
+		{
+
+			file << n << endl;
+			file << p << endl;
+			file.close();
+		}
+		else
+			cout << "Failed to open the file." << endl;
+
+	}
+	void saveToFile_sale(string n, int p,int c) {
+
+		ofstream file("dish_sale.txt", ios::app);
+
+		if (file.is_open())
+		{
+
+			file << n << endl;
+			file << p << endl;
+			file << c << endl;
+			file.close();
+		}
+		else
+			cout << "Failed to open the file." << endl;
+
+	}
+
+	void saveToFile_sale_again() {
+
+		ofstream file("dish_sale.txt");
+
+		if (file.is_open())
+		{
+			dish* temp = head;
+
+			while (temp != NULL)
+			{
+				file << temp->name << endl;
+				file << temp->price << endl;
+				file << temp->count << endl;
+				temp = temp->next;
+			}
+			file.close();
+		}
+		else
+			cout << "Failed to open the file." << endl;
+
+	}
+
+	void saveToFile_after_remove_dish() {
+
+		ofstream file("dish.txt");
+		dish* temp = head;
+		if (file.is_open())
+		{
+			while (temp != NULL)
+			{
+
+
+				file << temp->name << endl;
+				file << temp->price << endl;
+				file.close();
+
+				temp = temp->next;
+			}
+		}
+		else
+			cout << "Failed to open the file." << endl;
+	}
+	void loadFromFile() {
+		string n;
+		int p;
+
+		ifstream file("dish.txt");
+
+		if (file.is_open()) {
+			while (file >> n >> p) {
+
+				insert_dish(n, p);
+			}
+			file.close();
+		}
+		else {
+			cout << "Failed to open the file." << endl;
+		}
+	}
+
+	void loadFromFile_sale() {
+		string n;
+		int p;
+		int c;
+
+		ifstream file("dish_sale.txt");
+
+		if (file.is_open()) {
+			while (file >> n >> p>>c) {
+
+				insert_dish2(n, p,c);
+			}
+			file.close();
+		}
+		else {
+			cout << "Failed to open the file." << endl;
+		}
+	}
+	void insert_dish(string name, int p)
+	{
+
+		dish* new_node = new dish(name, p);
+
+		if (head == NULL)
+		{
+			head = new_node;
+		}
+		else
+		{
+			dish* temp = head;
+
+			while (temp->next != NULL)
+			{
+				temp = temp->next;
+			}
+
+			temp->next = new_node;
+		}
+	}
+	void insert_dish2(string name, int p,int c)
+	{
+
+		dish* new_node = new dish(name, p,c);
+
+		if (head == NULL)
+		{
+			head = new_node;
+		}
+		else
+		{
+			dish* temp = head;
+
+			while (temp->next != NULL)
+			{
+				temp = temp->next;
+			}
+
+			temp->next = new_node;
+		}
+	}
+	bool search(string dn)
+	{
+		dish* temp = head;
+		while (temp != NULL)
+		{
+			if (temp->name == dn)
+			{
+				return true;
+			}
+			temp = temp->next;
+		}
+		return false;
+	}
+
+	dish* get_dish(string dn)
+	{
+		dish* temp = head;
+		while (temp != NULL)
+		{
+			if (temp->name == dn)
+			{
+				return temp;
+			}
+			temp = temp->next;
+		}
+		return NULL;
+	}
+
+	int get_price(string dn)
+	{
+		dish* temp = head;
+		while (temp != NULL)
+		{
+			if (temp->name == dn)
+			{
+				return temp->price;
+			}
+			temp = temp->next;
+		}
+		return -1;
+	}
+	void update_menu()
+	{
+		int ccc;
+		string n;
+		int p;
+
+		do
+		{
+			cout << "-------------------" << endl;
+			cout << "  Menu Panel  " << endl;
+			cout << "-------------------" << endl;
+			cout << "1 : Insert_Dish " << endl;
+			cout << "2 : Remove_Dish " << endl;
+			cout << "0 : exit " << endl;
+			cout << "Enter Choice:";
+			cin >> ccc;
+			if (ccc == 0)
+			{
+			}
+			else if (ccc == 1)
+			{
+
+				cout << "enter name:";
+				cin >> n;
+				cout << "enter price:";
+				cin >> p;
+				insert_dish(n, p);
+				saveToFile(n, p);
+			}
+
+			else if (ccc == 2)
+			{
+				cout << "Enter Name:";
+				cin >> n;
+				if (remove_dish(n))
+				{
+					saveToFile_after_remove_dish();
+					cout << "Dish has been removed" << endl;
+				}
+				else
+				{
+					cout << "not found" << endl;
+				}
+			}
+			else
+			{
+				cout << "invalid choice" << endl;
+
+			}
+
+		} while (ccc != 0);
+	}
+	bool is_empty()
+	{
+		if (head == NULL)
+			return true;
+		else
+			return false;
+	}
+	bool remove_dish(string n)
+	{
+		bool found = false;
+		dish* temp = head;
+		dish* prev_node = head;
+		if (head != NULL)
+		{
+			while (temp != NULL)
+			{
+				if (temp->name == n)
+				{
+					found = true;
+					break;
+				}
+
+				prev_node = temp;
+				temp = temp->next;
+			}
+		}
+		else
+		{
+			return false;
+		}
+		if (found)
+		{
+			if (temp == head)
+			{
+				head = temp->next;
+				delete temp;
+			}
+			else
+			{
+				prev_node->next = temp->next;
+				delete temp;
+			}
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	void show_menu()
+	{
+		if (head != NULL)
+		{
+			int i = 1;
+
+			dish* temp = head;
+
+			while (temp != NULL)
+			{
+				cout << "-----------------------" << endl;
+				cout << "NO : " << i << endl;
+				cout << "Dish_Name : " << temp->name << endl;
+				cout << "Dish_Price : " << temp->price << endl;
+				cout << "-----------------------" << endl;
+				temp = temp->next;
+				i++;
+			}
+
+
+		}
+		else
+			cout << "Menu is empty" << endl;
+	}
+
+
+	void show_menu2()
+	{
+		
+		if (head != NULL)
+		{
+			int i = 1;
+
+			dish* temp=head;
+
+			while (temp != NULL)
+			{
+				dish* temp2 = head;
+				while (temp2->next != NULL)
+				{
+					if (temp2->count < temp2->next->count)
+					{
+						swap(temp2->count, temp2->next->count);
+						swap(temp2->name, temp2->next->name);
+						swap(temp2->price, temp2->next->price);
+					}
+					temp2 = temp2->next;
+				}
+				temp = temp->next;
+			}
+			
+			 temp = head;
+			while (temp != NULL)
+			{
+				cout << "-----------------------" << endl;
+				cout << "NO : " << i << endl;
+				cout << "Numbers sales : " <<temp->count << endl;
+				cout << "Dish_Name : " << temp->name << endl;
+				cout << "Dish_Price : " << temp->price << endl;
+				cout << "Total Sale : " << temp->price*temp->count << endl;
+				cout << "-----------------------" << endl;
+				temp = temp->next;
+				i++;
+			}
+
+
+		}
+		else
+			cout << "No Sale record " << endl;
+	}
+};
+
+class order    // order chain
+{
+public:
+	customer* table[Size];
+
+	order()
+	{
+
+		for (int i = 0; i < Size; i++)
+		{
+			table[i] = NULL;
+		}
+
+	}
+
+	int get_index(int key) const
+	{
+		int i = key % Size;
+		return i;
+	}
+
+	void saveToFile(string n, int i, int a, string l, string dn, int price, string type) {
+		ofstream file("order.txt", ios::app);
+		if (file.is_open())
+		{
+			file << n << endl;
+			file << i << endl;
+			file << a << endl;
+			file << l << endl;
+			file << dn << endl;
+			file << price << endl;
+			file << type << endl;
+			file << "----------------------" << endl;
+			file.close();
+		}
+		else
+			cout << "Failed to open the file." << endl;
+
+	}
+	void loadFromFile() {
+
+		int i;
+		string n;
+		string l;
+		string dn;
+		string line;
+		int price;
+		int a;
+		string type;
+
+
+
+		ifstream file("order.txt");
+
+		if (file.is_open()) {
+			while (file >> n >> i >> a >> l >> dn >> price >> type >> line) {
+
+				insert(i, n, a, l, dn, price, type);
+			}
+			file.close();
+		}
+		else {
+			cout << "Failed to open the file." << endl;
+		}
+	}
+
+
+	void insert(int idd, string n, int a, string l, string dn, int price, string type)
+	{
+
+		customer* new_node = new customer(idd, n, a, l, dn, price, type);
+		int index = get_index(idd);
+		customer* temp = table[index];
+
+		if (temp == NULL)
+		{
+			table[index] = new_node;
+		}
+		else
+		{
+
+			while (temp->next != NULL)
+			{
+				temp = temp->next;
+			}
+
+			temp->next = new_node;
+		}
+	
+	}
+
+	bool search_one(int id)
+	{
+
+		int index = get_index(id);
+		customer* temp = table[index];
+
+		if (temp != NULL)
+		{
+			bool flag = false;
+			int i = 1;
+
+			while (temp != NULL)
+			{
+				if (id == temp->d->id)
+				{
+					 flag = true;
+					cout << "         No : " << i << endl;
+					cout << "-----------------------" << endl;
+					cout << "Name : " << temp->d->name << endl;
+					cout << "id : " << temp->d->id << endl;
+					cout << "Address : " << temp->d->location << endl;
+					cout << "age : " << temp->d->age << endl;
+					cout << "dish_name : " << temp->dish_name->name << endl;
+					cout << "dish_name : " << temp->dish_name->price << endl;
+					cout << "Order_type : " << temp->d->order_type << endl;
+					cout << "-----------------------" << endl;
+					i++;
+				}
+					temp = temp->next;
+			}
+			if (flag)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+
+	void display()
+	{
+		int k = 1;
+		for (int i = 0; i < 17; i++)
+		{
+			customer* temp = table[i];
+			if (table[i] != NULL)
+			{
+				
+				customer* temp = table[i];
+
+				while (temp != NULL)
+				{
+					cout << "         No : " << k << endl;
+					cout << "-----------------------" << endl;
+					cout << "Name : " << temp->d->name << endl;
+					cout << "id : " << temp->d->id << endl;
+					cout << "Address : " << temp->d->location << endl;
+					cout << "age : " << temp->d->age << endl;
+					cout << "dish_name : " << temp->dish_name->name << endl;
+					cout << "dish_name : " << temp->dish_name->price << endl;
+					cout << "Order_type : " << temp->d->order_type << endl;
+					cout << "-----------------------" << endl;
+					temp = temp->next;
+					k++;
+				}
+			}		
+		}
+	}
+};
+
+class hashing
+{
+public:
+	customer* table[Size];
+
+	hashing()
+	{
+
+		for (int i = 0; i < Size; i++)
+		{
+			table[i] = NULL;
+		}
+
+	}
+
+	void saveToFile(int i, string n, int a, int p, string l) {
+
+		ofstream file("user_register.txt", ios::app);
+
+		if (file.is_open())
+		{
+
+			file << n << endl;
+			file << i << endl;
+			file << a << endl;
+			file << p << endl;
+			file << l << endl;
+			file.close();
+		}
+		else
+			cout << "Failed to open the file." << endl;
+
+	}
+	void loadFromFile() {
+		int i;
+		string n;
+		string l;
+		string dn;
+		int a;
+		int p;
+
+		ifstream file("user_register.txt");
+
+		if (file.is_open()) {
+			while (file >> n >> i >> a >> p >> l) {
+
+				Register(i, n, a, p, l);
+			}
+			file.close();
+		}
+		else {
+			cout << "Failed to open the file." << endl;
+		}
+	}
+
+	int get_index(int key) const
+	{
+		int i = key % Size;
+		return i;
+	}
+
+	void Register(int idd, string n, int a, int p, string l)
+	{
+
+		customer* new_node = new customer(idd, n, a, p, l);
+
+		int index = get_index(idd);
+		customer* temp = table[index];
+
+		if (temp == NULL)
+		{
+			table[index] = new_node;
+		}
+		else
+		{
+
+			while (temp->next != NULL)
+			{
+				temp = temp->next;
+			}
+
+			temp->next = new_node;
+		}
+	}
+
+	string get_dish_name(int idd)
+	{
+		int index = get_index(idd);
+
+		customer* temp = table[index];
+
+		return temp->dish_name->name;
+
+	}
+
+	bool search(int idd)
+	{
+		bool found = false;
+
+		int index = get_index(idd);
+
+		customer* temp = table[index];
+
+
+		if (temp != NULL)
+		{
+			while (temp != NULL)
+			{
+				if (temp->d->id == idd)
+				{
+					return true;
+				}
+
+
+				temp = temp->next;
+			}
+			return false;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	customer* get_customer(int idd) const
+	{
+		int index = get_index(idd);
+		customer* temp = table[index];
+		while (temp != NULL)
+		{
+
+			if (temp->d->id == idd)
+			{
+				return temp;
+			}
+
+
+			temp = temp->next;
+		}
+
+		return NULL;
+	}
+
+	void display()
+	{
+
+		for (int i = 0; i < 17; i++)
+		{
+			customer* temp = table[i];
+			if (table[i] != NULL)
+			{
+				cout << "-----------------------" << endl;
+				customer* temp = table[i];
+
+				while (temp != NULL)
+				{
+					cout << i << " : " << temp->d->id << "  ";
+					cout << temp->d->name << "  " << temp->d->age;
+					cout << "  " << temp->d->location << endl;
+					temp = temp->next;
+				}
+
+				cout << "-----------------------" << endl;
+			}
+			else
+				cout << i << " : empty" << endl;
+		}
+	}
+
+
+	bool login(int idd, int p)
+	{
+		bool found = false;
+
+		int index = get_index(idd);
+		customer* temp = table[index];
+		if (temp != NULL)
+		{
+			while (temp != NULL)
+			{
+				if (temp->d->id == idd && temp->d->pass == p)
+				{
+					return true;
+				}
+
+
+				temp = temp->next;
+			}
+			return false;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+
+
+
+
+
+
+};
+
+
+class walk_in
+{
+public:
+
+	customer* front;//   root->d->age
+
+	walk_in()
+	{
+		front = NULL;
+	}
+
+	bool empty()
+	{
+		if (front == NULL)
+		{
+			return true;
+		}
+		else
+			return false;
+	}
+
+
+
+	bool enqueue(int i, string nn, int a, string l, string dn, int price, string type)
+	{
+		customer* n = new customer(i, nn, a, l, dn, price, type);
+		bool found = false;
+		if (empty())
+		{
+			front = n;
+			return true;
+		}
+		else
+		{
+			customer* t_front = front;
+			while (t_front->next != NULL)
+			{
+				if (n->d->age > t_front->d->age)
+				{
+					n->next = front;
+					front = n;
+					found = true;
+					break;
+				}
+
+				if (n->d->age < t_front->d->age && n->d->age > t_front->next->d->age)
+				{
+					n->next = t_front->next;
+					t_front->next = n;
+					found = true;
+					break;
+				}
+
+				t_front = t_front->next;
+			}
+			if (t_front->next == NULL && !found)
+			{
+				t_front->next = n;
+
+			}
+
+			return true;
+		}
+
+
+	}
+
+	bool dequeue()  // return only id of custumer
+	{
+		if (empty())
+		{
+			return false;
+		}
+		else
+		{
+
+			customer* temp_front = front;
+			int r = front->d->id;
+			front = front->next;
+			delete temp_front;
+			return true;
+		}
+	}
+
+	int f_front()  // return only id of custumer
+	{
+		if (empty())
+		{
+			return -1;
+		}
+		return front->dish_name->price;
+	}
+
+	customer* get_front()  // return only id of custumer
+	{
+		if (empty())
+		{
+			return NULL;
+		}
+		
+		return front;
+	}
+
+
+	void display()
+	{
+		customer* temp = front;
+
+		cout << "\n----------------------------------" << endl;
+		while (temp != NULL)
+		{
+			cout << temp->d->name << endl;
+			cout << temp->d->id << endl;
+			cout << temp->dish_name->name << endl;
+			cout << temp->dish_name->price << endl;
+			cout << temp->d->age << endl;
+			temp = temp->next;
+		}
+		cout << "\n----------------------------------" << endl;
+	}
+
+
+};
+
+
+class dine_in
+{
+public:
+
+	customer* front;
+	int table;
+
+	dine_in()
+	{
+		front = NULL;
+		table = 5;
+	}
+
+	bool empty()
+	{
+
+		if (front == NULL)
+		{
+			return true;
+		}
+		else
+			return false;
+	}
+
+
+	void add_table(int a)
+	{
+		table = table + a;
+	}
+	void remove_table(int a)
+	{
+
+		table = table - a;
+		if (table < 0)
+		{
+			table = 0;
+		}
+	}
+
+
+
+	bool enqueue(int i, string nn, int a, string l, string dn, int price, string type)
+	{
+		if (table > 0)
+		{
+			customer* n = new customer(i, nn, a, l, dn, price, type);
+			table--;
+			if (empty())
+			{
+				front = n;
+
+				return true;
+			}
+			else
+			{
+
+				while (front->next != NULL)
+				{
+					front = front->next;
+				}
+				front->next = n;
+
+				return true;
+			}
+		}
+		else {
+			return false;
+		}
+	}
+
+	bool dequeue()  // return only id of custumer
+	{
+		if (empty())
+		{
+			return false;
+		}
+		else
+		{
+			if (table < 5)
+			{
+				table++;
+			}
+
+			customer* temp_front = front;
+			front = front->next;
+			delete temp_front;
+			return true;
+		}
+	}
+
+	int f_front()  // return only id of custumer
+	{
+		if (empty())
+		{
+			return -1;
+		}
+		return front->dish_name->price;
+	}
+
+	customer* get_front()  // return only id of custumer
+	{
+		if (empty())
+		{
+			return NULL;
+		}
+
+		return front;
+	}
+
+
+	void display()
+	{
+		customer* temp = front;
+
+		cout << "\n----------------------------------" << endl;
+		while (temp != NULL)
+		{
+			cout << temp->d->name << endl;
+			cout << temp->d->id << endl;
+			cout << temp->dish_name->name << endl;
+			cout << temp->dish_name->price << endl;
+			cout << temp->d->age << endl;
+			temp = temp->next;
+		}
+		cout << "\n----------------------------------" << endl;
+	}
+
+
+};
+
+
+class admin
+{
+public:
+	int id;
+	int pass;
+
+	admin()
+	{
+
+		id = 666;
+		pass = 5656;
+	}
+
+	bool login(int i, int p)
+	{
+		if (id == i)
+		{
+			if (pass == p)
+			{
+				return true;
+
+			}
+			else
+			{
+				return false;
+			}
+
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+};
+
+void save_sale(int t) {
+
+	ofstream file("sale.txt", ios::app);
+
+	if (file.is_open())
+	{
+
+		file << t << endl;
+		file.close();
+	}
+	else
+		cout << "Failed to open the file." << endl;
+
+}
+
+void load_total_sale()
+{
+	int t;
+	int sum = 0;
+	int count_day = 0;
+	ifstream file("sale.txt");
+
+	if (file.is_open()) {
+		while (file >> t) {
+			sum = sum + t;
+			count_day++;
+		}
+		if (count_day != 0)
+		{
+			cout << "Last " << count_day << " days Sale are " << sum << endl;
+		}
+		else
+			cout << "No record yet for previous sale" << endl;
+		file.close();
+	}
+	else {
+		cout << "Failed to open the file." << endl;
+	}
+
+
+
+}
+
+
+int main()
+{
+						
+	int ccc;
+	int ppp;
+	int sale = 0;
+	string dnn;
+	int ggg;
+	string ddnn;
+	int choice;
+	int n;
+	hashing c;
+	admin a;
+	menu m;
+	menu r;
+    order ord;
+	r.loadFromFile_sale();
+	
+
+	walk_in q;
+	walk_in q1;
+	dine_in d;
+
+	m.loadFromFile(); // load dishes
+
+	c.loadFromFile();
+
+
+	do
+	{
+		cout << "-------------------" << endl;
+		cout << "  MAIN PANNEL  " << endl;
+		cout << "-------------------" << endl;
+		cout << "1 : Admin " << endl;
+		cout << "2 : Customer " << endl;
+		cout << "0 : exit " << endl;
+		cout << "Enter Choice:";
+		cin >> n;
+		cout << "--------------------" << endl;
+		if (n == 1)
+		{
+			int k;
+			do
+			{
+				cout << "-------------------" << endl;
+				cout << "  ADMIN PANNEL  " << endl;
+				cout << "-------------------" << endl;
+				cout << "1 : Login " << endl;
+				cout << "0 : exit " << endl;
+				cout << "Enter Choice:";
+				cin >> k;
+				cout << "-------------------" << endl;
+				switch (k)
+				{
+				case 0:
+
+					break;
+
+				case 1:
+					int i, p;
+					cout << "Enter ID:";
+					cin >> i;
+					cout << "Enter Password:";
+					cin >> p;
+					if (a.login(i, p))
+					{
+						cout << "\nLogin Successfully\n" << endl;
+						int ch;
+						do
+						{
+							cout << "-------------------" << endl;
+							cout << "  ADMIN PANNEL  " << endl;
+							cout << "-------------------" << endl;
+							cout << "1 : Show_menu " << endl;
+							cout << "2 : Update_menu " << endl;
+							cout << "3 : See Walk In Order " << endl;
+							cout << "4 : See Dine In Order " << endl;
+							cout << "5 : Add_Table " << endl;
+							cout << "6 : Remove_Table " << endl;
+							cout << "7 : Today sale " << endl;
+							cout << "8 : Total Sale " << endl;
+							cout << "9 : Customer Record Lookup " << endl;
+							cout << "11 : Sale_Report_of_Dish " << endl;
+							cout << "0 : exit " << endl;
+							cout << "Enter Choice:";
+							cin >> ch;
+							switch (ch)
+							{
+							case 11:
+								r.show_menu2();
+								break;
+							case 0:
+								break;
+							case 1:
+
+								m.show_menu();
+								break;
+							case 2:
+								m.update_menu();
+								break;
+							case 3:
+								int cho;
+
+								do
+								{
+									if (q.empty())
+									{
+										cout << "\nAll order has been paid\n" << endl;
+										break;
+									}
+									q.display();
+									cout << "-------------------" << endl;
+									cout << "  ADMIN PANNEL  " << endl;
+									cout << "-------------------" << endl;
+									cout << "1 : Pay Order " << endl;
+									cout << "0 : Exit " << endl;
+									cout << "Enter choice:";
+									cin >> cho;
+
+									switch (cho)
+									{
+									case 1:
+
+										sale = sale + q.f_front();
+										 ccc = q.get_front()->dish_name->count;
+										 ppp = q.get_front()->dish_name->price;
+										 dnn = q.get_front()->dish_name->name;
+										if (q.dequeue())
+										{
+											if (r.search(dnn))
+											{
+												
+												r.get_dish(dnn)->count++;
+												r.saveToFile_sale_again();
+
+									      	}
+											else
+											{
+												r.insert_dish2(dnn,ppp,ccc);
+												r.saveToFile_sale(dnn,ppp,ccc);
+											}
+											cout << "This order has been paid" << endl;
+										}
+										else
+										{
+											cout << "Error! something is Wrong" << endl;
+										}
+										break;
+									case 0:
+										break;
+									default:
+										cout << "invalid" << endl;
+										break;
+									}
+
+								} while (cho != 0);
+								break;
+							case 4:
+
+
+
+								do
+								{
+									if (d.empty())
+									{
+										cout << "\nAll order has been paid\n" << endl;
+										break;
+									}
+									d.display();
+									cout << "-------------------" << endl;
+									cout << "  ADMIN PANNEL  " << endl;
+									cout << "-------------------" << endl;
+									cout << "1 : Pay Order " << endl;
+									cout << "0 : Exit " << endl;
+									cout << "Enter choice:";
+									cin >> cho;
+
+									switch (cho)
+									{
+									case 1:
+
+										sale = sale + d.f_front();
+										ccc = d.get_front()->dish_name->count;
+										 ppp = d.get_front()->dish_name->price;
+										dnn = d.get_front()->dish_name->name;
+										
+										if (d.dequeue())
+										{
+											if (r.search(dnn))
+											{
+
+												r.get_dish(dnn)->count++;
+
+												r.saveToFile_sale_again();
+
+											}
+											else
+											{
+												r.insert_dish2(dnn, ppp, ccc);
+												r.saveToFile_sale(dnn, ppp, ccc);
+											}
+											cout << "This order has been paid" << endl;
+										}
+										else
+										{
+											cout << "Error! something is Wrong" << endl;
+										}
+										break;
+									case 0:
+										break;
+									default:
+										cout << "invalid" << endl;
+										break;
+									}
+
+								} while (cho != 0);
+
+								break;
+							case 5:
+								int pp;
+								cout << "Current Table : " << d.table << endl;
+
+								cout << "Enter No of Table you Want add:";
+								cin >> pp;
+								d.add_table(pp);
+								cout << "Now Current Table : " << d.table << endl;
+
+
+								break;
+							case 6:
+
+								cout << "Current Table : " << d.table << endl;
+								cout << "Enter No of Table you Want remove:";
+								cin >> pp;
+								d.remove_table(pp);
+								cout << "Now Current Table : " << d.table << endl;
+								break;
+							case 7:
+								cout << "Today Sale : " << sale << endl;
+								break;
+							case 8:
+								load_total_sale();
+								break;
+							case 9:
+								
+								ord.loadFromFile();
+								ord.display();
+							
+
+								cout << "Enter id to check individually record of someone from above : ";
+								cin >> ggg;
+								if (!ord.search_one(ggg))
+								{
+									cout << "there no record for this user" << endl;
+								}
+
+								for (int i = 0; i < 17; i++)
+								{
+									ord.table[i] = NULL;
+								}
+								
+								break;
+							default:
+								cout << "invalid choice" << endl;
+								break;
+							}
+						} while (ch != 0);
+					}
+					else
+					{
+						cout << "Error! Something is wrong. Try Again" << endl;
+					}
+					break;
+
+				default:
+					cout << "invalid" << endl;;
+					break;
+				}
+			} while (k != 0);
+
+		}
+		else if (n == 2)
+		{
+			do
+			{
+				cout << "-------------------" << endl;
+				cout << "  CUSTOMER PANNEL  " << endl;
+				cout << "-------------------" << endl;
+				cout << "1 : Registration " << endl;
+				cout << "2 : Login " << endl;
+				cout << "0 : exit " << endl;
+				cout << "Enter Choice:";
+				cin >> choice;
+				cout << "-------------------" << endl;
+				switch (choice)
+				{
+				case 0:
+
+					break;
+				case 1:
+					int id;
+
+
+					cout << "Enter ID:";
+					cin >> id;
+					if (c.search(id))
+					{
+						cout << "\nError! This id is already exist." << endl;
+					}
+					else
+					{
+						int a;
+						string n;
+						int p;
+						cout << "Enter Name:";
+						cin >> n;
+						cout << "Enter age:";
+						cin >> a;
+						cout << "Enter password:";
+						cin >> p;
+						string l;
+						cout << "Enter Address:";
+						cin >> l;
+						c.Register(id, n, a, p, l);
+						c.saveToFile(id, n, a, p, l);
+
+						int ch;
+						do
+						{
+
+							cout << "-------------------" << endl;
+							cout << "  Customer PANNEL  " << endl;
+							cout << "-------------------" << endl;
+							cout << "1 : Show_menu " << endl;
+							cout << "0 : exit " << endl;
+							cout << "Enter Choice:";
+							cin >> ch;
+							switch (ch)
+							{
+							case 0:
+								break;
+							case 1:
+
+
+								int uu;
+								do
+								{
+									m.show_menu();
+									cout << "*" << endl;
+									cout << "*" << endl;
+
+
+									cout << "1 : Placed Order" << endl;
+									cout << "0 : Exit" << endl;
+									cout << "Enter Choice : ";
+									cin >> uu;
+
+									switch (uu)
+									{
+									case 0:
+
+										break;
+									case 1:
+										cout << "enter dish_name:";
+										cin >> ddnn;
+										int type;
+										if (m.search(ddnn))
+										{
+											int price = m.get_price(ddnn);
+											customer* t;
+											t = c.get_customer(id);
+											t->dish_name->name = ddnn;
+											do
+											{
+												cout << "-------------------" << endl;
+												cout << "  Select Order Type " << endl;
+												cout << "-------------------" << endl;
+												cout << "1 : Walk_In " << endl;
+												cout << "2 : Dine_In " << endl;
+												cout << "3 : ? Home_Delivery " << endl;
+												cout << "0 : Exit " << endl;
+												cout << "Enter Choice:";
+												cin >> type;
+												switch (type)
+												{
+												case 0:
+													break;
+												case 1:
+
+													q.enqueue(t->d->id, t->d->name, t->d->age, t->d->location, t->dish_name->name, price, "walk_in");
+													ord.saveToFile(t->d->name, t->d->id, t->d->age, t->d->location, t->dish_name->name, price, "walk_in");
+													cout << "Order is Done" << endl;
+
+													break;
+												case 2:
+
+
+													if (d.enqueue(t->d->id, t->d->name, t->d->age, t->d->location, t->dish_name->name, price, "dine_in"))
+													{
+														ord.saveToFile(t->d->name, t->d->id, t->d->age, t->d->location, t->dish_name->name, price, "dine_in");
+														cout << "Order is Done" << endl;
+													}
+													else
+													{
+														cout << "Table is not free yet" << endl;
+													}
+
+
+
+													break;
+												case 3:
+													q1.enqueue(t->d->id, t->d->name, t->d->age, t->d->location, t->dish_name->name, price, "online");
+													break;
+
+												default:
+													cout << "invalid choice" << endl;
+													break;
+												}
+											} while (type < 0 && type>3);
+
+
+
+										}
+										else {
+											cout << "invalid dish_name TRY AGAIN" << endl;
+										}
+										break;
+									default:
+										cout << "invalid input try again" << endl;
+										break;
+									}
+								} while (uu != 0);
+								break;
+							default:
+								cout << "invalid choice" << endl;
+								break;
+							}
+						} while (ch != 0);
+					}
+					break;
+				case 2:
+					int i, p;
+
+					cout << "Enter ID:";
+					cin >> i;
+					if (c.search(i))
+					{
+						cout << "Enter Password:";
+						cin >> p;
+						if (c.login(i, p))
+						{
+							cout << "\nLogin Successfully\n" << endl;
+
+							/////////////////////////////////////////////////////
+							int ot;
+							int choice2;
+							string dn;
+							do
+							{
+
+								m.show_menu();
+								cout << "*" << endl;
+								cout << "*" << endl;
+
+
+								cout << "1 : Placed Order" << endl;
+								cout << "0 : Exit" << endl;
+								cout << "Enter Choice : ";
+								cin >> choice2;
+								switch (choice2)
+								{
+								case 0:
+									break;
+								case 1:
+									cout << "enter dish_name:";
+									cin >> dn;
+									if (m.search(dn))
+									{
+										int price = m.get_price(dn);
+
+										customer* t;
+										t = c.get_customer(i);
+										t->dish_name->name = dn;
+
+										do
+										{
+											cout << "-------------------" << endl;
+											cout << "  Select Order Type " << endl;
+											cout << "-------------------" << endl;
+											cout << "1 : Walk_In " << endl;
+											cout << "2 : Dine_In " << endl;
+											cout << "3 : ? Home_Delivery " << endl;
+											cout << "0 : Exit " << endl;
+											cout << "Enter Choice:";
+											cin >> ot;
+											switch (ot)
+											{
+											case 0:
+												break;
+											case 1:
+
+												q.enqueue(t->d->id, t->d->name, t->d->age, t->d->location, t->dish_name->name, price, "walk_in");
+												ord.saveToFile(t->d->name, t->d->id, t->d->age, t->d->location, t->dish_name->name, price, "walk_in");
+
+												cout << "Order is Done" << endl;
+
+												break;
+											case 2:
+
+
+												if (d.enqueue(t->d->id, t->d->name, t->d->age, t->d->location, t->dish_name->name, price, "dine_in"))
+												{
+													ord.saveToFile(t->d->name, t->d->id, t->d->age, t->d->location, t->dish_name->name, price, "dine_in");
+													cout << "Order is Done" << endl;
+												}
+												else
+												{
+													cout << "Table is not free yet" << endl;
+												}
+
+
+
+												break;
+											case 3:
+												break;
+
+											default:
+												cout << "invalid choice" << endl;
+												break;
+											}
+
+										} while (ot < 0 && ot < 4);
+
+									}
+									else
+									{
+										cout << "ERROR! invalid dish_name Try again" << endl;
+									}
+
+									break;
+								default:
+									cout << "invalid" << endl;
+									break;
+								}
+							} while (choice2 != 0);
+
+
+
+							////////////////////////////////////////////////////
+
+
+						}
+						else
+						{
+							cout << "Error! Invalid Password. Try Again" << endl;
+						}
+					}
+					else
+					{
+						cout << "\nError! This id is not Exist\n" << endl;
+					}
+
+					break;
+
+				default:
+					cout << "invalid" << endl;
+					break;
+				}
+			} while (choice != 0);
+
+		}
+		else if (n == 0)
+		{
+			cout << "Thank You" << endl;
+
+		}
+		else
+		{
+			cout << "invalid input" << endl;
+		}
+	} while (n != 0);
+
+
+	save_sale(sale); // daily sale load to file
+	return 0;
+}
